@@ -57,5 +57,15 @@ TOOLKIT_FEATURES = {
         "description": "Extrair Texto de PDF para Markdown",
         "module": "features.pdf_extractor",
         "class": "PdfExtractor"
+    },
+    '6': {
+        "description": "Gerar Token de Segurança Criptograficamente Seguro",
+        "module": "features.token_generator",
+        "class": "TokenGeneratorFeature"
+    },
+    '7': {
+        "description": "Converter Imagem para .webp",
+        "module": "features.image_converter",
+        "class": "ImageConverter"
     }
 }

@@ -1,0 +1,43 @@
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs" xmlns:ui="http://wixtoolset.org/schemas/v4/wxs/ui">
+    <!-- 
+      Propriedades do Produto:
+      - Package substitui Product no WiX v4.
+      - Id é gerado automaticamente se não especificado, mas UpgradeCode é obrigatório.
+    -->
+    <Package Name="DM-Toolkit" 
+             Manufacturer="DeMaria" 
+             Version="1.0.0" 
+             UpgradeCode="{E7B3B5B8-C6E8-444F-8645-C6E726A258E2}" 
+             Language="1046"
+             InstallerVersion="200" 
+             Compressed="yes" 
+             Scope="perMachine">
+
+        <MajorUpgrade DowngradeErrorMessage="Uma versão mais nova do [ProductName] já está instalada." />
+        <MediaTemplate EmbedCab="yes" />
+
+        <!-- Estrutura de Diretórios -->
+        <StandardDirectory Id="ProgramFilesFolder">
+            <Directory Id="INSTALLFOLDER" Name="DM-Toolkit" />
+        </StandardDirectory>
+
+        <!-- 
+          Componente para adicionar o diretório de instalação ao PATH do sistema.
+        -->
+        <DirectoryRef Id="INSTALLFOLDER">
+            <Component Id="Path" Guid="{A1B2C3D4-E5F6-47A8-9B0C-1D2E3F456789}" KeyPath="yes">
+                <Environment Id="PATH" Name="PATH" Value="[INSTALLFOLDER]" Part="last" System="yes" Action="set" />
+            </Component>
+        </DirectoryRef>
+        
+        <!-- Recursos a serem instalados -->
+        <Feature Id="ProductFeature" Title="DM-Toolkit" Level="1">
+            <ComponentGroupRef Id="ApplicationComponents" />
+            <ComponentRef Id="Path" />
+        </Feature>
+        
+        <!-- UI Básica para o Instalador (WiX v4 usa ui:WixUI) -->
+        <ui:WixUI Id="WixUI_Minimal" />
+        
+    </Package>
+</Wix>

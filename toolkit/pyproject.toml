@@ -1,0 +1,17 @@
+[project]
+name = "dm-toolkit"
+version = "1.0.0"
+description = "Ferramenta de Análise e Compilação Unificada para auxiliar em tarefas de desenvolvimento."
+readme = "README.md"
+requires-python = ">=3.8"
+dependencies = [
+    "colorama",
+    "Pillow",
+]
+license = { text = "MIT" }
+authors = [
+    { name = "DeMaria", email = "example@example.com" },
+]
+
+[project.scripts]
+toolkit = "toolkit.launcher:main"
