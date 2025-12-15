@@ -47,7 +47,7 @@ class DbExtractor:
                 if not dbname: raise ValueError("Nome do banco de dados é obrigatório.")
                 url = f"mysql+mysqlconnector://{user}:{password}@{host}:{port}/{dbname}?charset=utf8"
             elif choice == '3': # SQL Server
-                host = input("Host (servidor ou instância, ex: localhost\SQLEXPRESS): ")
+                host = input(r"Host (servidor ou instância, ex: localhost\SQLEXPRESS): ")
                 dbname = input("Nome do banco de dados: ")
                 if not dbname: raise ValueError("Nome do banco de dados é obrigatório.")
                 auth_choice = input("Usar Autenticação do Windows (S/N)? [S]: ").upper() or 'S'

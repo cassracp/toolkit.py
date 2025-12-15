@@ -1,0 +1,70 @@
+﻿**********************
+Início da transcrição do Windows PowerShell
+Hora de início: 20251215103702
+Nome de Usuário: NOTE_CASSIO\cassr
+Executar como Usuário: NOTE_CASSIO\cassr
+Nome da Configuração: 
+Computador: NOTE_CASSIO (Microsoft Windows NT 10.0.26200.0)
+Aplicativo Host: powershell.exe -NoProfile -Command ./build.ps1
+ID do Processo: 19780
+PSVersion: 5.1.26100.7462
+PSEdition: Desktop
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1.26100.7462
+BuildVersion: 10.0.26100.7462
+CLRVersion: 4.0.30319.42000
+WSManStackVersion: 3.0
+PSRemotingProtocolVersion: 2.3
+SerializationVersion: 1.1.0.1
+**********************
+Transcrição iniciada, o arquivo de saída é C:\Users\cassr\OneDrive\MIG\Scripts\toolkit\build_log_20251215-103702.txt
+
+--- (1/7) Definindo variÃ¡veis do build ---
+Limpando diretÃ³rios de build antigos (dist, build, *.wixobj)...
+
+--- (2/7) Instalando dependÃªncias de build (pyinstaller) ---
+Defaulting to user installation because normal site-packages is not writeable
+Requirement already satisfied: pyinstaller in c:\users\cassr\appdata\local\packages\pythonsoftwarefoundation.python.3.13_qbz5n2kfra8p0\localcache\local-packages\python313\site-packages (
+6.17.0)
+Requirement already satisfied: altgraph in c:\users\cassr\appdata\local\packages\pythonsoftwarefoundation.python.3.13_qbz5n2kfra8p0\localcache\local-packages\python313\site-packages (fro
+m pyinstaller) (0.17.5)
+Requirement already satisfied: packaging>=22.0 in c:\users\cassr\appdata\local\packages\pythonsoftwarefoundation.python.3.13_qbz5n2kfra8p0\localcache\local-packages\python313\site-packag
+es (from pyinstaller) (25.0)
+Requirement already satisfied: pefile>=2022.5.30 in c:\users\cassr\appdata\local\packages\pythonsoftwarefoundation.python.3.13_qbz5n2kfra8p0\localcache\local-packages\python313\site-pack
+ages (from pyinstaller) (2024.8.26)
+Requirement already satisfied: pyinstaller-hooks-contrib>=2025.9 in c:\users\cassr\appdata\local\packages\pythonsoftwarefoundation.python.3.13_qbz5n2kfra8p0\localcache\local-packages\pyt
+hon313\site-packages (from pyinstaller) (2025.10)
+Requirement already satisfied: pywin32-ctypes>=0.2.1 in c:\users\cassr\appdata\local\packages\pythonsoftwarefoundation.python.3.13_qbz5n2kfra8p0\localcache\local-packages\python313\site-
+packages (from pyinstaller) (0.2.3)
+Requirement already satisfied: setuptools>=42.0.0 in c:\users\cassr\appdata\local\packages\pythonsoftwarefoundation.python.3.13_qbz5n2kfra8p0\localcache\local-packages\python313\site-pac
+kages (from pyinstaller) (75.8.0)
+
+--- (3/7) Executando PyInstaller para criar o executÃ¡vel... ---
+10058 INFO: Building EXE from EXE-00.toc completed successfully.
+10060 INFO: checking COLLECT
+10061 INFO: Building COLLECT because COLLECT-00.toc is non existent
+10062 INFO: Building COLLECT COLLECT-00.toc
+10279 INFO: Building COLLECT COLLECT-00.toc completed successfully.
+10281 INFO: Build complete! The results are available in: C:\Users\cassr\OneDrive\MIG\Scripts\toolkit\dist
+
+--- (4/7) Verificando a instalaÃ§Ã£o do WiX Toolset e sua versÃ£o... ---
+WiX Toolset v4+ detectado em: C:\Program Files\WiX Toolset v6.0\bin
+
+--- (5/7) Catalogando arquivos da aplicaÃ§Ã£o (Custom Harvest)... ---
+Arquivo de definiÃ§Ãµes gerado com sucesso: C:\Users\cassr\OneDrive\MIG\Scripts\toolkit\ApplicationFiles.wxs
+
+--- (6/7) Compilando definiÃ§Ãµes do instalador com Candle/wix build (WiX v4+)... ---
+Executando: C:\Program Files\WiX Toolset v6.0\bin\wix.exe build -ext WixToolset.UI.wixext -ext WixToolset.Util.wixext -o C:\Users\cassr\OneDrive\MIG\Scripts\toolkit\dist\dm-toolkit-1.0.0.msi -d SourceDir=C:\Users\cassr\OneDrive\MIG\Scripts\toolkit\dist\dm-toolkit C:\Users\cassr\OneDrive\MIG\Scripts\toolkit\toolkit.wxs C:\Users\cassr\OneDrive\MIG\Scripts\toolkit\ApplicationFiles.wxs
+
+--- (7/7) Criando o instalador .msi com Light (WiX v4+)... ---
+
+------------------------------------------------------------
+
+
+PROCESSO CONCLUÃDO COM SUCESSO!
+O instalador foi gerado em:
+C:\Users\cassr\OneDrive\MIG\Scripts\toolkit\dist\dm-toolkit-1.0.0.msi
+------------------------------------------------------------
+**********************
+Fim da transcrição do Windows PowerShell
+Hora de término: 20251215103721
+**********************

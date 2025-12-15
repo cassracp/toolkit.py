@@ -1,0 +1,45 @@
+PS C:\Users\cassr> toolkit
+
+==================================================
+      FERRAMENTA DE ANÁLISE E COMPILAÇÃO UNIFICADA
+==================================================
+Selecione a função que deseja utilizar:
+  1. Compilar Códigos-Fontes em arquivos de texto
+  2. Extrair Metadados de um Banco de Dados
+  3. Coletar Metadados de Diretórios
+  4. [DIAGNÓSTICO] Encontrar arquivos de código muito grandes
+  5. Extrair Texto de PDF para Markdown
+  6. Gerar Token de Segurança Criptograficamente Seguro
+  7. Converter Imagem para .webp
+--------------------------------------------------
+
+  0. Sair
+--------------------------------------------------
+Digite sua opção: 2
+
+--- Extrator de Metadados de Banco de Dados ---
+
+Selecione o tipo de banco de dados:
+  1. PostgreSQL
+  2. MySQL
+  3. SQL Server
+  4. Firebird
+  0. Voltar ao menu principal
+Digite o número da sua opção: 4
+Usuário [SYSDBA]:
+Senha [masterkey]:
+Host [localhost]:
+Porta [3050]:
+Caminho COMPLETO do arquivo .fdb: C:\Users\cassr\OneDrive\MIG\Tarefas\16231-ARACAJU-9-SE-VARIOS_SISTEMAS\Banco-Notar_escrituras_procuracoes\NOTAR_ATUALIZADO.FDB
+Charset [UTF8]:
+
+Tentando conectar ao banco de dados...
+
+--- ERRO ---
+Ocorreu um problema: Can't load plugin: sqlalchemy.dialects:firebird.fdb
+
+==============================
+Processo de extração de metadados do BD concluído!
+==============================
+
+Pressione Enter para continuar...
