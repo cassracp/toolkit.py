@@ -59,11 +59,18 @@ class DbExtractor:
                     password = getpass.getpass("Senha: ")
                     url = f"mssql+pyodbc://{user}:{password}@{host}/{dbname}?driver={driver}"
             elif choice == '4': # Firebird
-                user, charset = input("Usuário [SYSDBA]: ") or 'SYSDBA', input("Charset [UTF8]: ") or 'UTF8'
+                user = input("Usuário [SYSDBA]: ") or 'SYSDBA'
                 password = getpass.getpass("Senha [masterkey]: ") or 'masterkey'
-                db_path = input("Caminho do arquivo .fdb ou 'servidor:alias': ")
+                host = input("Host [localhost]: ") or 'localhost'
+                port = input("Porta [3050]: ") or '3050'
+                db_path = input("Caminho COMPLETO do arquivo .fdb: ")
+                if not db_path:
+                    raise ValueError("O caminho do arquivo .fdb é obrigatório.")
+                
                 dbname = os.path.splitext(os.path.basename(db_path))[0]
-                url = f"firebird+fdb://{user}:{password}@{db_path}?charset={charset}"
+                charset = input("Charset [UTF8]: ") or 'UTF8'
+                
+                url = f"firebird+fdb://{user}:{password}@{host}:{port}/{db_path}?charset={charset}"
         except (KeyboardInterrupt, ValueError) as e:
             print(f"\nOperação cancelada ou entrada inválida: {e}")
             return None, None
