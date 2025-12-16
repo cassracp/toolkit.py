@@ -20,7 +20,7 @@ class ImageConverter:
         self.root.withdraw()  # Oculta a janela principal do Tkinter
 
     def __str__(self):
-        return "Conversor de imagens para o formato .webp"
+        return "Conversor de imagens (múltiplas) para o formato .webp"
 
     def run(self):
         """
@@ -28,54 +28,57 @@ class ImageConverter:
         """
         print(f"--- {self} ---")
         try:
-            input_path = self._select_input_file()
-            if not input_path:
+            input_paths = self._select_input_file()
+            if not input_paths:
                 print("Nenhum arquivo de entrada selecionado. Operação cancelada.")
                 return
 
-            output_path = self._select_output_file(input_path)
-            if not output_path:
-                print("Nenhum local de saída selecionado. Operação cancelada.")
+            # Use o diretório do primeiro arquivo selecionado como diretório inicial para o diálogo de saída
+            initial_dir = os.path.dirname(input_paths[0]) if input_paths else None
+            output_dir = self._select_output_directory(initial_dir)
+            if not output_dir:
+                print("Nenhum diretório de saída selecionado. Operação cancelada.")
                 return
 
             quality = self._get_quality()
 
-            self._convert_image(input_path, output_path, quality)
+            for input_path in input_paths:
+                try:
+                    # Constrói o caminho de saída para cada imagem no diretório selecionado
+                    base_name = os.path.splitext(os.path.basename(input_path))[0]
+                    output_path = os.path.join(output_dir, base_name + ".webp")
 
-            print(f"\nImagem convertida com sucesso para: {output_path}")
+                    self._convert_image(input_path, output_path, quality)
+                    print(f"'{os.path.basename(input_path)}' convertido com sucesso para: '{output_path}'")
+                except Exception as e:
+                    print(f"Erro ao converter '{os.path.basename(input_path)}': {e}")
+
+            print("\nTodas as operações de conversão foram concluídas.")
 
         except Exception as e:
-            print(f"Ocorreu um erro durante a conversão: {e}")
+            print(f"Ocorreu um erro geral durante a conversão: {e}")
 
     def _select_input_file(self):
         """
         Abre um diálogo para o usuário selecionar o arquivo de imagem de entrada.
         """
         print("Por favor, selecione o arquivo de imagem a ser convertido.")
-        input_path = filedialog.askopenfilename(
+        input_paths = filedialog.askopenfilenames(
             title="Selecione a imagem para converter",
             filetypes=self.supported_formats
         )
-        return input_path
+        return input_paths
 
-    def _select_output_file(self, input_path):
+    def _select_output_directory(self, initial_dir=None):
         """
-        Abre um diálogo para o usuário definir o local e nome do arquivo de saída.
+        Abre um diálogo para o usuário selecionar um diretório para salvar os arquivos WebP de saída.
         """
-        print("Por favor, defina o nome e o local para o arquivo .webp de saída.")
-        # Define o nome do arquivo de saída padrão
-        default_name = os.path.splitext(os.path.basename(input_path))[0] + ".webp"
-        # Define o diretório inicial como o mesmo do arquivo de entrada
-        initial_dir = os.path.dirname(input_path)
-        
-        output_path = filedialog.asksaveasfilename(
-            title="Salvar arquivo WebP como...",
-            initialdir=initial_dir,
-            initialfile=default_name,
-            defaultextension=".webp",
-            filetypes=[("WebP", "*.webp")]
+        print("Por favor, selecione o diretório onde os arquivos WebP serão salvos.")
+        output_dir = filedialog.askdirectory(
+            title="Selecione o diretório de saída",
+            initialdir=initial_dir
         )
-        return output_path
+        return output_dir
 
     def _get_quality(self):
         """
@@ -100,9 +103,8 @@ class ImageConverter:
         """
         with Image.open(input_path) as img:
             # Garante que a imagem não tenha canal de transparência se o formato de saída não suportar
-            if output_path.lower().endswith('.jpg') or output_path.lower().endswith('.jpeg'):
-                 if img.mode in ("RGBA", "P"):
-                    img = img.convert("RGB")
+            if img.mode in ("RGBA", "P"):
+                img = img.convert("RGB")
             img.save(output_path, "webp", quality=quality)
 
 if __name__ == '__main__':

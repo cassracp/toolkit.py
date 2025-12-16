@@ -90,8 +90,25 @@ class DbExtractor:
                     f.write(f"--- METADADOS DO BANCO DE DADOS: {db_name} ---\n")
                     f.write(f"--- SGBD: {engine.dialect.name.capitalize()} ---\n\n")
                     
-                    schemas = [db_name] if engine.dialect.name == 'mysql' else inspector.get_schema_names()
-                    if not schemas and engine.dialect.name == 'firebird': schemas.append(None)
+                    # A obtenção de esquemas varia entre SGBDs
+                    schemas = []
+                    if engine.dialect.name == 'firebird':
+                        # Firebird não tem um conceito de schema forte, então usamos None
+                        schemas.append(None)
+                    elif engine.dialect.name == 'mysql':
+                        # MySQL usa o nome do banco como schema
+                        schemas = [db_name]
+                    else:
+                        # Para outros SGBDs, tentamos obter os schemas
+                        try:
+                            schemas = inspector.get_schema_names()
+                        except NotImplementedError:
+                            print("AVISO: O SGBD não suporta listagem de schemas. Continuando com schema padrão.")
+                            schemas.append(None)
+                    
+                    # Garantia para o caso de a lista de schemas vir vazia (ex: Firebird inicial)
+                    if not schemas:
+                         schemas.append(None)
                     
                     table_count = 0
                     for schema in schemas:

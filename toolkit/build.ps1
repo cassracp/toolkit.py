@@ -61,7 +61,7 @@ pip install pyinstaller
 # --- 3. Executar PyInstaller ---
 Write-Host "
 --- (3/7) Executando PyInstaller para criar o executável... ---" -ForegroundColor Cyan
-python -m PyInstaller --name $ProjectName --onedir --noconfirm "toolkit/launcher.py"
+python -m PyInstaller --name $ProjectName --onedir --noconfirm --hidden-import=fdb "toolkit/launcher.py"
 
 
 # --- 4. Verificar Instalação do WiX Toolset e Versão ---
