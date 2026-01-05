@@ -5,12 +5,13 @@ import getpass
 from toolkit.utils import selecionar_diretorio
 
 try:
-    from sqlalchemy import create_engine, inspect
+    from sqlalchemy import create_engine, inspect, text
     from sqlalchemy.exc import SQLAlchemyError
 except ImportError:
     SQLAlchemyError = None
     create_engine = None
     inspect = None
+    text = None
 
 class DbExtractor:
     def __init__(self):
@@ -47,7 +48,23 @@ class DbExtractor:
                 if not dbname: raise ValueError("Nome do banco de dados é obrigatório.")
                 url = f"mysql+mysqlconnector://{user}:{password}@{host}:{port}/{dbname}?charset=utf8"
             elif choice == '3': # SQL Server
-                host = input(r"Host (servidor ou instância, ex: localhost\SQLEXPRESS): ")
+                server = input("Servidor (IP ou Hostname) [localhost]: ") or 'localhost'
+                port_instance = input("Porta (ex: 1433) ou Instância (ex: SQLEXPRESS) [Opcional - Enter para pular]: ")
+                
+                if port_instance:
+                    # Verifica se é uma porta (apenas dígitos)
+                    if port_instance.isdigit():
+                        # Para ODBC Driver, porta é separada por vírgula
+                        host = f"{server},{port_instance}"
+                    else:
+                        # Assume que é uma instância. Trata se o usuário digitou '\SQLEXPRESS' ou apenas 'SQLEXPRESS'
+                        if port_instance.startswith('\\'):
+                            host = f"{server}{port_instance}"
+                        else:
+                            host = f"{server}\\{port_instance}"
+                else:
+                    host = server
+
                 dbname = input("Nome do banco de dados: ")
                 if not dbname: raise ValueError("Nome do banco de dados é obrigatório.")
                 auth_choice = input("Usar Autenticação do Windows (S/N)? [S]: ").upper() or 'S'
@@ -76,6 +93,29 @@ class DbExtractor:
             return None, None
         return url, dbname
 
+    def _get_charset(self, engine, db_name):
+        charset = "Não foi possível determinar"
+        dialect_name = engine.dialect.name
+        try:
+            with engine.connect() as connection:
+                if dialect_name == 'postgresql':
+                    stmt = text("SELECT pg_encoding_to_char(encoding) FROM pg_database WHERE datname = :db_name")
+                    result = connection.execute(stmt, {'db_name': db_name})
+                    charset = result.scalar()
+                elif dialect_name == 'mysql':
+                    result = connection.execute(text("SELECT @@character_set_database"))
+                    charset = result.scalar()
+                elif dialect_name == 'mssql':
+                    stmt = text("SELECT DATABASEPROPERTYEX(:db_name, 'Collation')")
+                    result = connection.execute(stmt, {'db_name': db_name})
+                    charset = result.scalar()
+                elif dialect_name == 'firebird':
+                    result = connection.execute(text("SELECT RDB$CHARACTER_SET_NAME FROM RDB$DATABASE"))
+                    charset = result.scalar().strip()
+        except Exception as e:
+            print(f"AVISO: Não foi possível determinar o charset do banco de dados: {e}")
+        return charset
+
     def _extract(self, url, db_name, diretorio_saida):
         nome_arquivo = f"{db_name}-metadata.txt"
         caminho_completo_saida = os.path.join(diretorio_saida, nome_arquivo)
@@ -86,9 +126,11 @@ class DbExtractor:
             with engine.connect():
                 print("Conexão bem-sucedida!")
                 inspector = inspect(engine)
+                charset = self._get_charset(engine, db_name)
                 with open(caminho_completo_saida, 'w', encoding='utf-8') as f:
                     f.write(f"--- METADADOS DO BANCO DE DADOS: {db_name} ---\n")
-                    f.write(f"--- SGBD: {engine.dialect.name.capitalize()} ---\n\n")
+                    f.write(f"--- SGBD: {engine.dialect.name.capitalize()} ---\n")
+                    f.write(f"--- CHARSET: {charset} ---\n\n")
                     
                     # A obtenção de esquemas varia entre SGBDs
                     schemas = []

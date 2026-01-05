@@ -1,0 +1,61 @@
+==================================================
+      FERRAMENTA DE ANÁLISE E COMPILAÇÃO UNIFICADA
+==================================================
+Selecione a função que deseja utilizar:
+  1. Compilar Códigos-Fontes em arquivos de texto
+  2. Extrair Metadados de um Banco de Dados
+  3. Coletar Metadados de Diretórios
+  4. [DIAGNÓSTICO] Encontrar arquivos de código muito grandes
+  5. Extrair Texto de PDF para Markdown
+  6. Gerar Token de Segurança Criptograficamente Seguro
+  7. Converter Imagem para .webp
+--------------------------------------------------
+
+  0. Sair
+--------------------------------------------------
+Digite sua opção: 2
+
+--- Extrator de Metadados de Banco de Dados ---
+
+Selecione o tipo de banco de dados:
+  1. PostgreSQL
+  2. MySQL
+  3. SQL Server
+  4. Firebird
+  0. Voltar ao menu principal
+Digite o número da sua opção: 4
+Usuário [SYSDBA]:
+Senha [masterkey]:
+Host [localhost]:
+Porta [3050]:
+Caminho COMPLETO do arquivo .fdb: C:\Users\cassr\OneDrive\MIG\Tarefas\16231-ARACAJU-9-SE-VARIOS_SISTEMAS\Banco-Notar_escrituras_procuracoes\NOTARLIVROS_ATUALIZADO.FDB
+Charset [UTF8]:
+
+Tentando conectar ao banco de dados...
+Conexão bem-sucedida!
+
+ERRO INESPERADO: Ocorreu um problema durante a execução.
+Tipo do Erro: NotImplementedError
+Detalhe do erro:
+Traceback (most recent call last):
+  File "C:\Users\cassr\OneDrive\MIG\Scripts\toolkit\toolkit\main.py", line 108, in main
+    instance.run()
+    ~~~~~~~~~~~~^^
+  File "C:\Users\cassr\OneDrive\MIG\Scripts\toolkit\toolkit\features\db_extractor.py", line 139, in run
+    self._extract(connection_url, db_name, diretorio_saida)
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\cassr\OneDrive\MIG\Scripts\toolkit\toolkit\features\db_extractor.py", line 93, in _extract
+    schemas = [db_name] if engine.dialect.name == 'mysql' else inspector.get_schema_names()
+                                                               ~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\cassr\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\engine\reflection.py", line 373, in get_schema_names
+    return self.dialect.get_schema_names(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        conn, info_cache=self.info_cache, **kw
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\cassr\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\engine\interfaces.py", line 1558, in get_schema_names
+    raise NotImplementedError()
+NotImplementedError
+
+Pressione Enter para continuar...

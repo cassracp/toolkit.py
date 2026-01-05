@@ -22,3 +22,6 @@ saida/
 
 # Pastas de log
 logs_limpeza_tarefas/
+
+# Gemini
+GEMINI/*

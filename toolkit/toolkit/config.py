@@ -67,5 +67,15 @@ TOOLKIT_FEATURES = {
         "description": "Converter Imagem para .webp",
         "module": "features.image_converter",
         "class": "ImageConverter"
+    },
+    '8': {
+        "description": "Raspar Manifesto Oil Fantasy (Blogspot)",
+        "module": "features.oil_fantasy_scraper",
+        "class": "OilFantasyScraper"
+    },
+    '9': {
+        "description": "Extrair Código-Fonte JS de PDF",
+        "module": "features.pdf_js_extractor",
+        "class": "PdfJsExtractor"
     }
 }
