@@ -69,13 +69,18 @@ TOOLKIT_FEATURES = {
         "class": "ImageConverter"
     },
     '8': {
-        "description": "Raspar Manifesto Oil Fantasy (Blogspot)",
-        "module": "features.oil_fantasy_scraper",
-        "class": "OilFantasyScraper"
-    },
-    '9': {
         "description": "Extrair Código-Fonte JS de PDF",
         "module": "features.pdf_js_extractor",
         "class": "PdfJsExtractor"
+    },
+    '9': {
+        "description": "Executar Scripts MySQL em Lote (Restore)",
+        "module": "features.mysql_runner",
+        "class": "MySQLBatchRunner"
+    },
+    '10': {
+        "description": "Migrador Firebird (2.5 -> 4.0 via Docker)",
+        "module": "features.firebird_migrator",
+        "class": "FirebirdMigrator"
     }
 }
