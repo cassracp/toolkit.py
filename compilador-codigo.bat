@@ -1,2 +1,3 @@
 @echo off
-python "C:\Users\cassr\OneDrive\MIG\Scripts\compilador_codigo.py" %*
+cd /d "%~dp0"
+python "compilador_codigo.py" %*

@@ -123,35 +123,31 @@ class MySQLBatchRunner:
 
     def _find_mysql_binary(self):
         """
-        Tenta localizar o mysql.exe no PATH ou em caminhos comuns.
+        Tenta localizar o mysql.exe usando config do usuário, PATH, ou solicitando ao usuário.
         """
-        # 1. Tentar pelo PATH do sistema
+        from toolkit.user_config import UserConfigManager
+        config = UserConfigManager()
+        
+        # 1. Tentar ler da configuração do usuário
+        saved_path = config.get('mysql_path')
+        if saved_path and os.path.exists(saved_path):
+            return saved_path
+
+        # 2. Tentar pelo PATH do sistema
         path = shutil.which("mysql")
         if path:
+            config.set('mysql_path', path)
             return path
 
-        # 2. Tentar caminhos comuns do Windows
-        common_paths = [
-            r"C:\Program Files\MySQL\MySQL Server 8.0\bin\mysql.exe",
-            r"C:\Program Files\MySQL\MySQL Server 8.1\bin\mysql.exe",
-            r"C:\Program Files\MySQL\MySQL Server 5.7\bin\mysql.exe",
-            r"C:\Program Files (x86)\MySQL\MySQL Server 8.0\bin\mysql.exe",
-            r"C:\xampp\mysql\bin\mysql.exe",
-            r"C:\wamp64\bin\mysql\mysql8.0.21\bin\mysql.exe" # Exemplo Wamp
-        ]
-
-        for p in common_paths:
-            if os.path.exists(p):
-                return p
-
         # 3. Solicitar ao usuário se não encontrar
-        print("\n[AVISO] 'mysql.exe' não encontrado automaticamente.")
-        user_path = input("Por favor, digite o caminho completo para o arquivo mysql.exe: ").strip()
+        print("\n[AVISO] 'mysql.exe' não encontrado automaticamente (nem no config, nem no PATH).")
+        user_path = input("Por favor, digite o caminho completo para o arquivo mysql.exe (será salvo para as próximas vezes): ").strip()
         
         # Remove aspas caso o usuário tenha copiado como "Caminho"
         user_path = user_path.replace('"', '')
         
         if os.path.exists(user_path) and user_path.lower().endswith("mysql.exe"):
+            config.set('mysql_path', user_path)
             return user_path
         
         return None

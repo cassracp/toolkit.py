@@ -1,12 +1,31 @@
 # --- INÍCIO DO SCRIPT ---
 
+# Carrega configurações do arquivo user_config.json, se existir
+$configFile = Join-Path $PSScriptRoot "toolkit\user_config.json"
+$config = @{}
+if (Test-Path $configFile) {
+    try {
+        $config = Get-Content $configFile | ConvertFrom-Json
+    } catch {
+        $config = @{}
+    }
+}
+
 # 1. CONFIGURE A PASTA RAIZ AQUI
-# Altere "C:\Caminho\Para\Sua\PastaDeBancos" para o caminho completo da pasta que contém os backups.
-$pastaRaiz = "C:\Users\cassr\OneDrive\MIG\Tarefas"
+if ($config.limpeza_tarefas_dir) {
+    $pastaRaiz = $config.limpeza_tarefas_dir
+} else {
+    $pastaRaiz = Read-Host "Por favor, digite o caminho completo da pasta de tarefas para limpar"
+    $config | Add-Member -MemberType NoteProperty -Name "limpeza_tarefas_dir" -Value $pastaRaiz -Force
+    $config | ConvertTo-Json | Set-Content $configFile
+}
 
 # 2. CONFIGURE A PASTA PARA SALVAR OS ARQUIVOS DE LOG
-# Altere "C:\Caminho\Para\Seus\Logs" para a pasta onde os logs serão salvos.
-$caminhoLogs = "C:\Users\cassr\OneDrive\MIG\Scripts\logs_limpeza_tarefas"
+if ($config.limpeza_tarefas_logs) {
+    $caminhoLogs = $config.limpeza_tarefas_logs
+} else {
+    $caminhoLogs = Join-Path $PSScriptRoot "logs_limpeza_tarefas"
+}
 
 # 3. DEFINA O LIMITE DE DIAS (1 ANO = 365 DIAS)
 $diasLimite = 365

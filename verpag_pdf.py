@@ -8,9 +8,18 @@ from datetime import datetime
 # ==============================================================================
 
 # O diretório raiz a ser vasculhado.
-# ATUALIZE ESTA VARIÁVEL com o caminho da sua pasta principal.
-# Exemplo: DIRETORIO_RAIZ = r"C:\Users\cassr\OneDrive\Projetos\migrador2\DOC Migrador"
-DIRETORIO_RAIZ = "D:/Tarefas/16694-NOSSA-SENHORA-DO-SOCORRO-IMAGENS/PROCURAÇÕES PÚBLICAS"
+import sys
+sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'toolkit'))
+try:
+    from toolkit.user_config import UserConfigManager
+    config = UserConfigManager()
+    DIRETORIO_RAIZ = config.get('verpag_pdf_dir')
+    if not DIRETORIO_RAIZ:
+        DIRETORIO_RAIZ = input("Por favor, digite o caminho completo da pasta que deseja verificar e pressione Enter: ").strip()
+        if DIRETORIO_RAIZ:
+            config.set('verpag_pdf_dir', DIRETORIO_RAIZ)
+except ImportError:
+    DIRETORIO_RAIZ = input("Por favor, digite o caminho completo da pasta que deseja verificar e pressione Enter: ").strip()
 
 # Nome do arquivo de log onde os resultados serão salvos
 NOME_ARQUIVO_LOG = "pdfs_com_mais_de_duas_paginas.log"

@@ -61,7 +61,39 @@ pip install pyinstaller
 # --- 3. Executar PyInstaller ---
 Write-Host "
 --- (3/7) Executando PyInstaller para criar o executável... ---" -ForegroundColor Cyan
-python -m PyInstaller --name $ProjectName --onedir --noconfirm --hidden-import=fdb "toolkit/launcher.py"
+# Coletar dinamicamente todos os submódulos de 'toolkit.features' para hidden-import
+# Isso é necessário porque o main.py usa importlib dinâmico, o que o PyInstaller não detecta estaticamente.
+$FeaturesDir = "$ProjectRoot\toolkit\features"
+
+# Dependências críticas que o PyInstaller pode não detectar automaticamente (drivers de BD, etc.)
+$CriticalHiddenImports = @(
+    "fdb",
+    "sqlalchemy",
+    "sqlalchemy.sql.default_comparator", # Frequentemente perdido pelo PyInstaller
+    "psycopg2",
+    "mysql.connector",
+    "pyodbc",
+    "sqlalchemy_firebird"
+)
+
+$HiddenImportsArgs = @()
+foreach ($import in $CriticalHiddenImports) {
+    $HiddenImportsArgs += "--hidden-import=$import"
+}
+
+if (Test-Path $FeaturesDir) {
+    $FeatureFiles = Get-ChildItem -Path $FeaturesDir -Filter "*.py"
+    foreach ($file in $FeatureFiles) {
+        if ($file.Name -ne "__init__.py") {
+            $ModuleName = "toolkit.features." + $file.BaseName
+            $HiddenImportsArgs += "--hidden-import=$ModuleName"
+        }
+    }
+}
+
+Write-Host "Hidden Imports detectados: $HiddenImportsArgs" -ForegroundColor Gray
+
+python -m PyInstaller --name $ProjectName --onedir --noconfirm $HiddenImportsArgs "toolkit/launcher.py"
 
 
 # --- 4. Verificar Instalação do WiX Toolset e Versão ---

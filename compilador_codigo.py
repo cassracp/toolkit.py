@@ -44,8 +44,14 @@ TAMANHO_MAX_BYTES = 50 * 1024 * 1024
 MAX_ARQUIVOS_SAIDA = 10
 # ---------------------------------
 
-# --- DIRETÓRIO DE SAÍDA FIXO ---
-DIRETORIO_SAIDA = r"C:\Users\cassr\OneDrive\MIG\Scripts\saida"
+# --- DIRETÓRIO DE SAÍDA ---
+sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'toolkit'))
+try:
+    from toolkit.user_config import UserConfigManager
+    config = UserConfigManager()
+    DIRETORIO_SAIDA = config.get('diretorio_saida', os.path.join(os.path.dirname(os.path.abspath(__file__)), 'saida'))
+except ImportError:
+    DIRETORIO_SAIDA = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'saida')
 
 def extrair_codigo_fonte(diretorio_raiz):
     """

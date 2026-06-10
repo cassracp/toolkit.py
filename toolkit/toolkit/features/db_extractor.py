@@ -13,12 +13,17 @@ except ImportError:
     inspect = None
     text = None
 
+try:
+    from access_parser import AccessParser
+except ImportError:
+    AccessParser = None
+
 class DbExtractor:
     def __init__(self):
         print("\n--- Extrator de Metadados de Banco de Dados ---")
         if not SQLAlchemyError:
             print("ERRO: Bibliotecas de banco de dados não instaladas.")
-            print('Para usar esta função, instale: pip install SQLAlchemy "psycopg2-binary" "mysql-connector-python" "pyodbc" "fdb"')
+            print('Para usar esta função, instale: pip install SQLAlchemy "psycopg2-binary" "mysql-connector-python" "pyodbc" "fdb" "sqlalchemy-access" "access-parser"')
 
     def _get_db_driver_choice(self):
         print("\nSelecione o tipo de banco de dados:")
@@ -26,10 +31,11 @@ class DbExtractor:
         print("  2. MySQL")
         print("  3. SQL Server")
         print("  4. Firebird")
+        print("  5. MS Access (.mdb, .accdb) [Recomendado para arquivos antigos]")
         print("  0. Voltar ao menu principal")
         while True:
             choice = input("Digite o número da sua opção: ")
-            if choice in ['1', '2', '3', '4', '0']: return choice
+            if choice in ['1', '2', '3', '4', '5', '0']: return choice
             print("Opção inválida. Tente novamente.")
 
     def _build_connection_url(self, choice):
@@ -88,6 +94,16 @@ class DbExtractor:
                 charset = input("Charset [UTF8]: ") or 'UTF8'
                 
                 url = f"firebird+fdb://{user}:{password}@{host}:{port}/{db_path}?charset={charset}"
+            elif choice == '5': # MS Access
+                db_path = input("Caminho COMPLETO do arquivo .mdb ou .accdb: ")
+                if not db_path:
+                    raise ValueError("O caminho do arquivo é obrigatório.")
+                if not os.path.exists(db_path):
+                    raise ValueError(f"Arquivo não encontrado: {db_path}")
+                
+                dbname = os.path.splitext(os.path.basename(db_path))[0]
+                # Para Access, retornamos o caminho do arquivo como a "URL"
+                url = f"access_file://{db_path}"
         except (KeyboardInterrupt, ValueError) as e:
             print(f"\nOperação cancelada ou entrada inválida: {e}")
             return None, None
@@ -116,7 +132,90 @@ class DbExtractor:
             print(f"AVISO: Não foi possível determinar o charset do banco de dados: {e}")
         return charset
 
+    def _extract_access_native(self, db_path, db_name, diretorio_saida):
+        """Extrai metadados de arquivos Access (.mdb, .accdb) usando access-parser (sem drivers)"""
+        if not AccessParser:
+            print("ERRO: Biblioteca 'access-parser' não instalada. Execute: pip install access-parser")
+            return
+
+        nome_arquivo = f"{db_name}-metadata.txt"
+        caminho_completo_saida = os.path.join(diretorio_saida, nome_arquivo)
+        
+        print(f"\nLendo arquivo Access: {db_path}...")
+        try:
+            db = AccessParser(db_path)
+            # Tenta obter as tabelas do catálogo. O access-parser mudou em versões recentes.
+            tables = []
+            if hasattr(db, 'catalog'):
+                if isinstance(db.catalog, dict):
+                    tables = sorted(db.catalog.keys())
+                else:
+                    tables = sorted(db.catalog)
+            
+            with open(caminho_completo_saida, 'w', encoding='utf-8') as f:
+                f.write(f"--- METADADOS DO BANCO DE DADOS: {db_name} ---\n")
+                f.write(f"--- SGBD: MS Access (via access-parser) ---\n")
+                f.write(f"--- ARQUIVO: {db_path} ---\n\n")
+                
+                table_count = 0
+                error_count = 0
+                for table_name in tables:
+                    # Pula tabelas de sistema e temporárias
+                    if table_name.startswith('MSys') or table_name.startswith('~'):
+                        continue
+                        
+                    table_count += 1
+                    print(f"Processando tabela: {table_name}...", end=" ", flush=True)
+                    
+                    try:
+                        f.write(f"{ '='*40}\nTABELA: {table_name}\n{ '='*40}\n\n")
+                        f.write("COLUNAS:\n")
+                        
+                        try:
+                            # No access-parser, a estrutura (metadados) está no catálogo
+                            table_def = db.catalog.get(table_name)
+                            
+                            if table_def and hasattr(table_def, 'columns'):
+                                for col in table_def.columns:
+                                    f.write(f"  - {col.name}: {col.type}\n")
+                                print("OK")
+                            elif table_def and isinstance(table_def, dict) and 'columns' in table_def:
+                                # Caso o catálogo seja um dicionário de dicionários em algumas versões
+                                for col_name, col_info in table_def['columns'].items():
+                                    f.write(f"  - {col_name}: {col_info}\n")
+                                print("OK (via dict)")
+                            else:
+                                print(f"FALHA (Tipo: {type(table_def)})")
+                                f.write(f"  AVISO: Estrutura não reconhecida para esta tabela.\n")
+                                f.write(f"  Tipo do objeto: {type(table_def)}\n")
+                        except Exception as inner_e:
+                            error_count += 1
+                            print(f"FALHA")
+                            f.write(f"  AVISO: Falha ao ler estrutura detalhada desta tabela.\n")
+                            f.write(f"  Erro técnico: {str(inner_e)}\n")
+                        
+                        f.write("\n\n")
+                    except Exception as e:
+                        error_count += 1
+                        print(f"ERRO CRÍTICO")
+                        f.write(f"ERRO CRÍTICO ao processar tabela {table_name}: {e}\n\n")
+
+                print(f"\nExtração concluída!")
+                print(f"- {table_count} tabelas processadas.")
+                if error_count > 0:
+                    print(f"- {error_count} tabelas apresentaram falhas (detalhes no TXT).")
+                print(f"Metadados salvos em '{caminho_completo_saida}'.")
+        except Exception as e:
+            print(f"\n--- ERRO CRÍTICO ---\nNão foi possível abrir o arquivo Access: {e}")
+            print("DICA: Certifique-se de que o arquivo não está aberto em outro programa.")
+
     def _extract(self, url, db_name, diretorio_saida):
+        # Se for um arquivo Access usando a nova lógica
+        if url.startswith("access_file://"):
+            db_path = url.replace("access_file://", "")
+            self._extract_access_native(db_path, db_name, diretorio_saida)
+            return
+
         nome_arquivo = f"{db_name}-metadata.txt"
         caminho_completo_saida = os.path.join(diretorio_saida, nome_arquivo)
         

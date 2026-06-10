@@ -3,9 +3,16 @@
 import os
 import datetime
 
-# --- NOVO: DIRETÓRIO DE SAÍDA FIXO ---
+# --- DIRETÓRIO DE SAÍDA ---
 # O diretório onde todos os arquivos de saída serão salvos, conforme solicitado.
-DIRETORIO_SAIDA = r"C:\Users\cassr\OneDrive\MIG\Scripts\saida"
+import sys
+sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'toolkit'))
+try:
+    from toolkit.user_config import UserConfigManager
+    config = UserConfigManager()
+    DIRETORIO_SAIDA = config.get('diretorio_saida', os.path.join(os.path.dirname(os.path.abspath(__file__)), 'saida'))
+except ImportError:
+    DIRETORIO_SAIDA = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'saida')
 
 def formatar_tamanho(tamanho_bytes):
     """Converte o tamanho de bytes para um formato legível (KB, MB, GB)."""

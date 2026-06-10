@@ -1,2 +1,3 @@
 @echo off
-python "C:\Users\cassr\OneDrive\MIG\Scripts\coletor_metadados.py" %*
+cd /d "%~dp0"
+python "coletor_metadados.py" %*

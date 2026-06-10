@@ -1,2 +1,3 @@
 @echo off
-python "C:\Users\cassr\OneDrive\MIG\Scripts\extrator_meta_geral.py" %*
+cd /d "%~dp0"
+python "extrator_meta_geral.py" %*
