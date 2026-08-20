@@ -23,5 +23,16 @@ saida/
 # Pastas de log
 logs_limpeza_tarefas/
 
-# Gemini
+# GEMINI
 GEMINI/*
+GEMINI.md
+
+# GEMINI MONITOR
+gemini_monitor*
+GEMINI_MONITOR.md
+
+# Chrome Monitor
+.chrome_monitor*
+
+# Arquivos internos/ocultos
+.*

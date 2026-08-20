@@ -88,7 +88,7 @@ class FirebirdMigrator:
 
     def run(self):
         print("\n=== MIGRADOR FIREBIRD (2.5 -> 4.0) ===")
-        print("Esta ferramenta usa Docker para converter backups antigos ou arquivos .fdb")
+        print("Esta ferramenta usa Docker para converter backups antigos ou arquivos .fdb/.gdb")
         print("para o formato compatível com Firebird 4.0.\n")
 
         # 1. Verifica Docker
@@ -99,8 +99,8 @@ class FirebirdMigrator:
             return
 
         # 2. Solicita Arquivo
-        print("Selecione o arquivo .fdb ou .fbk na janela que será aberta...")
-        file_path = selecionar_arquivo("Selecione o banco de dados Firebird", [("Arquivos Firebird", "*.fdb *.fbk"), ("Todos os arquivos", "*.*")])
+        print("Selecione o arquivo .fdb, .gdb ou .fbk na janela que será aberta...")
+        file_path = selecionar_arquivo("Selecione o banco de dados Firebird", [("Arquivos Firebird", "*.fdb *.fbk *.gdb"), ("Todos os arquivos", "*.*")])
         
         if not file_path:
             print("[INFO] Nenhum arquivo selecionado. Operação cancelada.")
@@ -128,8 +128,8 @@ class FirebirdMigrator:
         use_fb4_directly = False # Flag para caso detectemos que o banco já é novo
         
         # --- PASSO 1: BACKUP (FB 2.5) ---
-        if input_path.suffix.lower() == '.fdb':
-            print(f"\n[FASE 1] Arquivo .fdb detectado. Tentando backup com engine 2.5...")
+        if input_path.suffix.lower() in ['.fdb', '.gdb']:
+            print(f"\n[FASE 1] Arquivo {input_path.suffix.lower()} detectado. Tentando backup com engine 2.5...")
             
             bkp_filename = input_path.stem + "_migrated.fbk"
             bkp_path = work_dir / bkp_filename
@@ -180,7 +180,7 @@ class FirebirdMigrator:
             print(f"\n[FASE 1] Arquivo .fbk detectado. Pulando para restauração...")
             bkp_file = filename
         else:
-            print("[ERRO] Formato não suportado. Use .fdb ou .fbk")
+            print("[ERRO] Formato não suportado. Use .fdb, .gdb ou .fbk")
             return
 
         # --- FLUXO ALTERNATIVO: BANCO JÁ É 4.0 ---
@@ -243,7 +243,7 @@ class FirebirdMigrator:
                 print(f"Arquivo final: {target_path}")
                 
                 # Limpeza
-                if bkp_file and (input_path.suffix.lower() == '.fdb' or use_fb4_directly):
+                if bkp_file and (input_path.suffix.lower() in ['.fdb', '.gdb'] or use_fb4_directly):
                     if input("\nDeseja excluir o arquivo de backup intermediário (.fbk)? (s/n): ").lower() == 's':
                         try:
                             os.remove(work_dir / bkp_file)
