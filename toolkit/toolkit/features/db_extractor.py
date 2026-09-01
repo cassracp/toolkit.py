@@ -2,6 +2,7 @@
 
 import os
 import getpass
+from urllib.parse import quote_plus
 from toolkit.utils import selecionar_diretorio
 
 try:
@@ -46,13 +47,13 @@ class DbExtractor:
                 password = getpass.getpass("Senha: ")
                 dbname = input("Nome do banco de dados: ")
                 if not dbname: raise ValueError("Nome do banco de dados é obrigatório.")
-                url = f"postgresql+psycopg2://{user}:{password}@{host}:{port}/{dbname}"
+                url = f"postgresql+psycopg2://{quote_plus(user)}:{quote_plus(password)}@{host}:{port}/{dbname}"
             elif choice == '2': # MySQL
                 user, host, port = input("Usuário [root]: ") or 'root', input("Host [localhost]: ") or 'localhost', input("Porta [3306]: ") or '3306'
                 password = getpass.getpass("Senha: ")
                 dbname = input("Nome do banco de dados: ")
                 if not dbname: raise ValueError("Nome do banco de dados é obrigatório.")
-                url = f"mysql+mysqlconnector://{user}:{password}@{host}:{port}/{dbname}?charset=utf8"
+                url = f"mysql+mysqlconnector://{quote_plus(user)}:{quote_plus(password)}@{host}:{port}/{dbname}?charset=utf8"
             elif choice == '3': # SQL Server
                 server = input("Servidor (IP ou Hostname) [localhost]: ") or 'localhost'
                 port_instance = input("Porta (ex: 1433) ou Instância (ex: SQLEXPRESS) [Opcional - Enter para pular]: ")
@@ -80,7 +81,7 @@ class DbExtractor:
                 else:
                     user = input("Usuário: ")
                     password = getpass.getpass("Senha: ")
-                    url = f"mssql+pyodbc://{user}:{password}@{host}/{dbname}?driver={driver}"
+                    url = f"mssql+pyodbc://{quote_plus(user)}:{quote_plus(password)}@{host}/{dbname}?driver={driver}"
             elif choice == '4': # Firebird
                 user = input("Usuário [SYSDBA]: ") or 'SYSDBA'
                 password = getpass.getpass("Senha [masterkey]: ") or 'masterkey'
@@ -93,7 +94,7 @@ class DbExtractor:
                 dbname = os.path.splitext(os.path.basename(db_path))[0]
                 charset = input("Charset [UTF8]: ") or 'UTF8'
                 
-                url = f"firebird+fdb://{user}:{password}@{host}:{port}/{db_path}?charset={charset}"
+                url = f"firebird+fdb://{quote_plus(user)}:{quote_plus(password)}@{host}:{port}/{db_path}?charset={charset}"
             elif choice == '5': # MS Access
                 db_path = input("Caminho COMPLETO do arquivo .mdb ou .accdb: ")
                 if not db_path:

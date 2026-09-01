@@ -32,3 +32,12 @@ def formatar_tamanho(tamanho_bytes):
 def contar_palavras(texto):
     """Conta o número de palavras em uma string, usando espaço como delimitador."""
     return len(texto.split())
+
+def limpar_tela():
+    """Limpa a tela do console."""
+    import os
+    os.system('cls' if os.name == 'nt' else 'clear')
+
+def aguardar_enter():
+    """Aguarda o usuário pressionar Enter."""
+    input("\nPressione Enter para continuar...")

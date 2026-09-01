@@ -82,5 +82,10 @@ TOOLKIT_FEATURES = {
         "description": "Migrador Firebird (2.5 -> 4.0 via Docker)",
         "module": "features.firebird_migrator",
         "class": "FirebirdMigrator"
+    },
+    '11': {
+        "description": "Restaurador de Banco de Dados SQL Server em Lote (.bak)",
+        "module": "features.sql_server_restorer",
+        "class": "RestauradorSqlServer"
     }
 }
