@@ -279,6 +279,11 @@ class DbExtractor:
                     print(f"Metadados salvos em '{caminho_completo_saida}'.")
         except (SQLAlchemyError, IOError) as e:
             print(f"\n--- ERRO ---\nOcorreu um problema: {e}")
+        except UnicodeDecodeError as e:
+            print(f"\n--- ERRO ---\nFalha de decodificação ao tentar conectar ou ler o banco de dados.")
+            print(f"DICA: Verifique se a senha, usuário e nome do banco de dados estão absolutamente corretos.")
+            print(f"Muitas vezes isso acontece quando a conexão falha (senha errada, etc.) e o PostgreSQL retorna uma mensagem de erro com acentuação que causa falha no driver.")
+            print(f"Detalhe técnico: {e}")
 
     def run(self):
         if not SQLAlchemyError:
